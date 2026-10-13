@@ -150,4 +150,65 @@ class RegistrationServiceTest {
         assertFalse(result);
         assertFalse(student.isRegistered("CS301"));
     }
+    
+    @Test void shouldAllowRegistrationOfFifthCourse() {
+
+        Student student = new Student("S101", "Anita");
+
+// NEW: Add four existing courses (16 credits).
+        student.addRegistration("CS101", 4); 
+        student.addRegistration("CS102", 4);
+        student.addRegistration("CS201", 4); 
+        student.addRegistration("CS202", 4);
+
+        Course fifthCourse = new Course( "CS301", "Data Structures", 4, 30, true, null );
+
+        RegistrationService service = new RegistrationService();
+
+        boolean result = service.register(student, fifthCourse);
+
+// NEW: Verify that the fifth registration succeeds. 
+        assertTrue(result); 
+        assertTrue(student.isRegistered("CS301")); 
+        assertEquals(5, student.getRegisteredCourses().size()); 
+        assertEquals(20, student.getTotalCredits()); 
+        assertEquals(1, fifthCourse.getCurrentEnrollment());
+         }
+
+
+  @Test void shouldRejectRegistrationOfSixthCourseWithoutChangingState() {
+
+        Student student = new Student("S101", "Anita");
+
+// NEW: Add five existing courses (20 credits).
+        student.addRegistration("CS101", 4); 
+        student.addRegistration("CS102", 4);
+        student.addRegistration("CS201", 4); 
+        student.addRegistration("CS202", 4);
+        student.addRegistration("CS203", 4);
+
+// NEW: Use a 1-credit course so the credit limit // does not cause the rejection.
+        Course sixthCourse = new Course( "CS301", "Data Structures", 1, 30, true, null );
+
+        RegistrationService service = new RegistrationService();
+
+// NEW: Save the state before attempting registration. 
+        int previousCredits = student.getTotalCredits(); 
+        int previousCourseCount = student.getRegisteredCourses().size(); 
+        int previousEnrollment = sixthCourse.getCurrentEnrollment();
+
+        boolean result = service.register(student, sixthCourse);
+
+// NEW: Verify that the sixth registration is rejected. 
+        assertFalse(result);
+
+// NEW: Verify that no state changes after rejection. 
+        assertFalse(student.isRegistered("CS301")); 
+        assertEquals(previousCourseCount, student.getRegisteredCourses().size()); 
+        assertEquals(previousCredits, student.getTotalCredits()); 
+        assertEquals(previousEnrollment, sixthCourse.getCurrentEnrollment());
+     }
+
+}
+
 }
