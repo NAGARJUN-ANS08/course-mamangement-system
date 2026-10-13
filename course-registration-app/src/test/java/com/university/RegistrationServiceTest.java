@@ -211,4 +211,3 @@ class RegistrationServiceTest {
 
 }
 
-}
