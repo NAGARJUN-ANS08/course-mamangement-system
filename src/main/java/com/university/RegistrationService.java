@@ -3,7 +3,7 @@ package com.university;
 public class RegistrationService {
 
     private static final int MAX_CREDITS = 20;
-
+    private static final int MAX_COURSES = 5;
     public boolean register(Student student, Course course) {
 
         if (!course.isActive()) {
@@ -29,7 +29,9 @@ public class RegistrationService {
         if (student.getTotalCredits() + course.getCredits() > MAX_CREDITS) {
             return false;
         }
-
+        if (student.getRegisteredCourses().size() >= MAX_COURSES) {
+            return false;
+        }
         student.addRegistration(
                 course.getCourseCode(),
                 course.getCredits());
